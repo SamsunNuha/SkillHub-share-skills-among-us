@@ -96,7 +96,7 @@ if (isLoggedIn()) {
                             $photo_src = $base_path . 'assets/uploads/' . ($current_user['profile_photo'] ? $current_user['profile_photo'] : 'default-profile.png');
                             ?>
                             <img src="<?php echo $photo_src; ?>" alt="Profile" class="avatar-nav">
-                            <span class="fw-semibold d-none d-sm-inline">Member</span>
+                            <span class="fw-semibold d-none d-sm-inline"><?php echo htmlspecialchars($current_user['username']); ?></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-3" aria-labelledby="profileDropdown" style="border-radius: 12px; min-width: 200px;">
                             <li><h6 class="dropdown-header text-muted">My Session</h6></li>

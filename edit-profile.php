@@ -16,11 +16,26 @@ $success = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Sanitize text inputs
     $name = $user['name']; // Name field removed from UI, keep existing
+    $new_username = sanitize($_POST['username'] ?? $user['username']);
     $university = sanitize($_POST['university']);
     $department = sanitize($_POST['department']);
     $bio = sanitize($_POST['bio']);
     $skills_teach = sanitize($_POST['skills_teach']);
     $skills_learn = sanitize($_POST['skills_learn']);
+
+    // Validate username
+    if (empty($new_username)) {
+        $errors[] = "Username cannot be empty.";
+    } elseif (preg_match('/[^a-zA-Z0-9_]/', $new_username)) {
+        $errors[] = "Username can only contain letters, numbers, and underscores.";
+    } elseif ($new_username !== $user['username']) {
+        // Check if username is already taken by another user
+        $stmt_chk = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = ? AND id != ?");
+        $stmt_chk->execute([$new_username, $user['id']]);
+        if ($stmt_chk->fetchColumn() > 0) {
+            $errors[] = "That username is already taken. Please choose another.";
+        }
+    }
     
     // Validation for text fields (name removed)
 
@@ -91,11 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Save profile to database if no errors
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare("UPDATE users SET name = ?, university = ?, department = ?, bio = ?, skills_teach = ?, skills_learn = ?, profile_photo = ? WHERE id = ?");
-            $stmt->execute([$name, $university, $department, $bio, $skills_teach, $skills_learn, $photo_filename, $user['id']]);
+            $stmt = $pdo->prepare("UPDATE users SET name = ?, username = ?, university = ?, department = ?, bio = ?, skills_teach = ?, skills_learn = ?, profile_photo = ? WHERE id = ?");
+            $stmt->execute([$name, $new_username, $university, $department, $bio, $skills_teach, $skills_learn, $photo_filename, $user['id']]);
             
             // Refresh local user variables
-            $_SESSION['user_name'] = $name;
+            $_SESSION['user_name'] = $new_username;
             $user = getLoggedInUser($pdo);
             $success = true;
             setFlashMessage('success', 'Profile details updated successfully!');
@@ -149,7 +164,15 @@ require_once 'includes/navbar.php';
                         </div>
 
                         <div class="row g-4">
-                            <!-- Full Name field removed per user request -->
+                            <!-- Username -->
+                            <div class="col-md-6">
+                                <label for="username" class="form-label form-label-premium"><i class="bi bi-at me-1 text-primary"></i>Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-at text-muted"></i></span>
+                                    <input type="text" name="username" id="username" class="form-control form-control-premium border-start-0" value="<?php echo htmlspecialchars($user['username']); ?>" placeholder="e.g. alex_jones" required>
+                                </div>
+                                <small class="text-muted">Only letters, numbers, and underscores allowed.</small>
+                            </div>
 
                             <!-- University -->
                             <div class="col-md-6">

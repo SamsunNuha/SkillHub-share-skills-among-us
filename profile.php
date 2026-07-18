@@ -65,7 +65,8 @@ require_once 'includes/navbar.php';
                     <img src="assets/uploads/<?php echo htmlspecialchars($student['profile_photo'] ? $student['profile_photo'] : 'default-profile.png'); ?>" alt="Student Photo" class="avatar-profile shadow-md">
                 </div>
                 
-                <h3 class="fw-bold mb-1">Member Profile</h3>
+                <h3 class="fw-bold mb-1"><?php echo htmlspecialchars($student['username']); ?></h3>
+                <span class="badge bg-primary-subtle text-primary px-3 py-1 mb-2" style="font-size:0.82rem; letter-spacing:0.04em;"><i class="bi bi-person-check-fill me-1"></i>Member</span>
                 <?php
                     // Mask the email domain
                     $email_parts = explode('@', $student['email']);

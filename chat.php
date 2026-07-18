@@ -8,7 +8,6 @@ $user = getLoggedInUser($pdo);
 $with_id = isset($_GET['with']) ? (int)$_GET['with'] : 0;
 if (!$with_id || $with_id === $user['id']) { header('Location: messages.php'); exit; }
 
-<?php
 // Fetch other user
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$with_id]);
@@ -16,15 +15,27 @@ $other = $stmt->fetch();
 if (!$other) { header('Location: messages.php'); exit; }
 
 // Verify that a skill swap request between the two users has been accepted
-$stmt = $pdo->prepare("SELECT cr.status FROM contact_requests cr WHERE ((cr.sender_id = :uid AND cr.receiver_id = :oid) OR (cr.sender_id = :oid AND cr.receiver_id = :uid)) ORDER BY cr.created_at DESC LIMIT 1");
-$stmt->execute([':uid' => $user['id'], ':oid' => $with_id]);
+$stmt = $pdo->prepare("
+    SELECT cr.status 
+    FROM contact_requests cr 
+    JOIN skills s ON cr.skill_id = s.id 
+    WHERE ((cr.sender_email = :my_email AND s.user_id = :other_id) 
+       OR (cr.sender_email = :other_email AND s.user_id = :my_id)) 
+    ORDER BY cr.created_at DESC 
+    LIMIT 1
+");
+$stmt->execute([
+    ':my_email' => $user['email'],
+    ':other_id' => $with_id,
+    ':other_email' => $other['email'],
+    ':my_id' => $user['id']
+]);
 $statusRow = $stmt->fetch();
 if (!$statusRow || $statusRow['status'] !== 'Accepted') {
     setFlashMessage('danger', 'You can only chat after a skill swap request has been accepted.');
     header('Location: messages.php');
     exit;
 }
-?>
 
 // Find or create conversation (always store lower id as user1)
 $u1 = min($user['id'], $with_id);
@@ -42,7 +53,40 @@ if (!$conv) {
     $conv_id = $conv['id'];
 }
 
-// Handle new message POST
+// AJAX endpoints for seamless real-time chat
+if (isset($_GET['action'])) {
+    if ($_GET['action'] === 'fetch') {
+        header('Content-Type: application/json');
+        $stmt = $pdo->prepare("SELECT m.*, u.name AS sender_name, u.profile_photo AS sender_photo
+                                FROM messages m
+                                JOIN users u ON u.id = m.sender_id
+                                WHERE m.conversation_id = ?
+                                ORDER BY m.created_at ASC");
+        $stmt->execute([$conv_id]);
+        $all_msgs = $stmt->fetchAll();
+        
+        // Mark as read
+        $pdo->prepare("UPDATE messages SET is_read = 1 WHERE conversation_id = ? AND sender_id = ? AND is_read = 0")
+            ->execute([$conv_id, $with_id]);
+            
+        echo json_encode(['status' => 'success', 'messages' => $all_msgs]);
+        exit;
+    }
+    if ($_GET['action'] === 'send' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        header('Content-Type: application/json');
+        $body = isset($_POST['body']) ? trim($_POST['body']) : '';
+        if (!empty($body)) {
+            $stmt = $pdo->prepare("INSERT INTO messages (conversation_id, sender_id, body) VALUES (?, ?, ?)");
+            $stmt->execute([$conv_id, $user['id'], $body]);
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Empty message']);
+        }
+        exit;
+    }
+}
+
+// Handle new message POST (Standard fallback fallback)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['body'])) {
     $body = trim($_POST['body']);
     if (!empty($body)) {
