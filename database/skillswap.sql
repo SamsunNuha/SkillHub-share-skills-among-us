@@ -73,6 +73,33 @@ CREATE TABLE IF NOT EXISTS `admins` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
+-- Table structure for table `conversations`
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `conversations` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user1_id` INT NOT NULL,
+  `user2_id` INT NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `unique_conversation` (`user1_id`, `user2_id`),
+  FOREIGN KEY (`user1_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user2_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+-- Table structure for table `messages`
+-- --------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `messages` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `conversation_id` INT NOT NULL,
+  `sender_id` INT NOT NULL,
+  `body` TEXT NOT NULL,
+  `is_read` TINYINT(1) DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`conversation_id`) REFERENCES `conversations`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 -- Seeding Default Categories
 -- --------------------------------------------------------
 INSERT INTO `categories` (`name`, `icon`) VALUES
