@@ -108,20 +108,35 @@ if (isLoggedIn()) {
                 <?php else: ?>
                     <!-- Student / Guest links -->
                     <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>index.php">Home</a>
+                        <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>index.php">
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>browse-skills.php">Browse Skills</a>
+                        <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>browse-skills.php">
+                            <i class="bi bi-search"></i> Browse Skills
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>about.php">About</a>
+                        <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>about.php">
+                            <i class="bi bi-info-circle"></i> About
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>contact.php">Contact</a>
+                        <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>contact.php">
+                            <i class="bi bi-envelope"></i> Contact
+                        </a>
                     </li>
                     <?php if (isLoggedIn()): ?>
                         <li class="nav-item">
-                            <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>add-skill.php">Add Skill</a>
+                            <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>dashboard.php">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>add-skill.php">
+                                <i class="bi bi-plus-circle"></i> Add Skill
+                            </a>
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link nav-link-custom position-relative dropdown-toggle-no-caret" href="#" id="messagesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -181,7 +196,7 @@ if (isLoggedIn()) {
                             <li><h6 class="dropdown-header text-muted">My Session</h6></li>
                             <li><a class="dropdown-item py-2" href="<?php echo $base_path; ?>dashboard.php"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
                             <li><a class="dropdown-item py-2" href="<?php echo $base_path; ?>profile.php?id=<?php echo $current_user['id']; ?>"><i class="bi bi-person me-2"></i> My Profile</a></li>
-                            <li><a class="dropdown-item py-2 d-flex align-items-center justify-content-between" href="<?php echo $base_path; ?>messages.php"><span><i class="bi bi-chat-dots me-2"></i> Messages</span><?php if ($unread_count > 0): ?><span class="badge bg-danger rounded-pill"><?php echo $unread_count; ?></span><?php endif; ?></a></li>
+                            <li><a class="dropdown-item py-2 d-flex align-items-center justify-content-between" href="<?php echo $base_path; ?>messages.php"><span><i class="bi bi-chat-dots-fill me-2"></i> Messages</span><?php if ($unread_count > 0): ?><span class="badge bg-danger rounded-pill"><?php echo $unread_count; ?></span><?php endif; ?></a></li>
                             <li><a class="dropdown-item py-2" href="<?php echo $base_path; ?>edit-profile.php"><i class="bi bi-gear me-2"></i> Edit Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item py-2 text-danger" href="<?php echo $base_path; ?>logout.php"><i class="bi bi-box-arrow-right me-2"></i> Log Out</a></li>
