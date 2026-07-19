@@ -119,17 +119,18 @@ try {
     $stmt->execute([$user['id']]);
     $my_skills = $stmt->fetchAll();
 
-    // 4. Fetch Received Inquiries list with skill owner id
-    $stmt = $pdo->prepare("SELECT cr.*, s.title as skill_title, s.user_id as skill_owner_id
+    // 4. Fetch Received Inquiries list with skill owner id and sender id
+    $stmt = $pdo->prepare("SELECT cr.*, s.title as skill_title, s.user_id as skill_owner_id, u.id as sender_user_id
                            FROM contact_requests cr
                            JOIN skills s ON cr.skill_id = s.id
+                           LEFT JOIN users u ON cr.sender_email = u.email
                            WHERE s.user_id = ?
                            ORDER BY cr.created_at DESC");
     $stmt->execute([$user['id']]);
     $received_requests = $stmt->fetchAll();
 
     // 5. Fetch Sent Requests (by email match)
-    $stmt = $pdo->prepare("SELECT cr.*, s.title as skill_title, u.name as skill_owner_name
+    $stmt = $pdo->prepare("SELECT cr.*, s.title as skill_title, u.name as skill_owner_name, s.user_id as skill_owner_id
                            FROM contact_requests cr
                            JOIN skills s ON cr.skill_id = s.id
                            JOIN users u ON s.user_id = u.id
@@ -359,8 +360,8 @@ require_once 'includes/navbar.php';
                                                 Inquiry marked as <strong><?php echo $req['status']; ?></strong> on <?php echo date("M d, Y", strtotime($req['created_at'])); ?>.
                                             </div>
                                             <?php if ($req['status'] === 'Accepted'): ?>
-                                                <div class="d-grid">
-                                                    <a href="chat.php?with=<?php echo $req['skill_owner_id']; ?>" class="btn btn-primary btn-sm"><i class="bi bi-chat-dots-fill me-1"></i> Chat Now</a>
+                                                <div class="d-grid mb-3">
+                                                    <a href="chat.php?with=<?php echo $req['sender_user_id'] ? $req['sender_user_id'] : $req['skill_owner_id']; ?>" class="btn btn-primary btn-sm"><i class="bi bi-chat-dots-fill me-1"></i> Chat Now</a>
                                                 </div>
                                             <?php endif; ?>
                                         <?php endif; ?>
@@ -436,6 +437,11 @@ require_once 'includes/navbar.php';
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </div>
+                            <?php if ($sreq['status'] === 'Accepted'): ?>
+                                <div class="d-grid mb-3">
+                                    <a href="chat.php?with=<?php echo $sreq['skill_owner_id']; ?>" class="btn btn-primary btn-sm"><i class="bi bi-chat-dots-fill me-1"></i> Chat Now</a>
+                                </div>
+                            <?php endif; ?>
                             <!-- Reply Form for sender -->
                             <form action="dashboard.php" method="POST" class="mt-2">
                                 <input type="hidden" name="action" value="send_reply">

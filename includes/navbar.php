@@ -13,6 +13,30 @@ if (isLoggedIn()) {
     // Count unread messages for nav badge
     try {
         $uid = $_SESSION['user_id'];
+        
+        // Auto-create conversations for all accepted requests involving this user
+        $auto_stmt = $pdo->prepare("
+            SELECT cr.sender_email, s.user_id AS owner_id, u.id AS sender_id
+            FROM contact_requests cr
+            JOIN skills s ON cr.skill_id = s.id
+            JOIN users u ON u.email = cr.sender_email
+            WHERE cr.status = 'Accepted' AND (s.user_id = :uid OR u.id = :uid)
+        ");
+        $auto_stmt->execute([':uid' => $uid]);
+        $accepted_chats = $auto_stmt->fetchAll();
+        foreach ($accepted_chats as $ac) {
+            $u1 = min($ac['owner_id'], $ac['sender_id']);
+            $u2 = max($ac['owner_id'], $ac['sender_id']);
+            
+            // Check if conversation exists
+            $c_stmt = $pdo->prepare("SELECT id FROM conversations WHERE user1_id = ? AND user2_id = ?");
+            $c_stmt->execute([$u1, $u2]);
+            if (!$c_stmt->fetch()) {
+                $ins_stmt = $pdo->prepare("INSERT INTO conversations (user1_id, user2_id) VALUES (?, ?)");
+                $ins_stmt->execute([$u1, $u2]);
+            }
+        }
+
         $uc_stmt = $pdo->prepare("SELECT COUNT(*) FROM messages m
             JOIN conversations c ON c.id = m.conversation_id
             WHERE (c.user1_id = ? OR c.user2_id = ?)
