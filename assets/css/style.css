@@ -200,6 +200,18 @@ a {
   background: rgba(79, 70, 229, 0.07);
 }
 
+.dropdown-toggle-no-caret::after {
+  display: none !important;
+}
+
+.dropdown-menu .dropdown-item {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: var(--bg-light);
+}
+
 /* Hamburger */
 .hamburger {
   align-self: center;

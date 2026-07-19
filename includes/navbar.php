@@ -7,6 +7,7 @@ require_once __DIR__ . '/db.php';
 
 $current_user = null;
 $unread_count = 0;
+$nav_conversations = [];
 if (isLoggedIn()) {
     $current_user = getLoggedInUser($pdo);
     // Count unread messages for nav badge
@@ -18,7 +19,35 @@ if (isLoggedIn()) {
               AND m.sender_id != ? AND m.is_read = 0");
         $uc_stmt->execute([$uid, $uid, $uid]);
         $unread_count = (int)$uc_stmt->fetchColumn();
-    } catch (Exception $e) { $unread_count = 0; }
+
+        // Fetch up to 5 recent conversations for dropdown
+        $conv_stmt = $pdo->prepare("
+            SELECT c.id AS conv_id,
+                   IF(c.user1_id = :uid1, c.user2_id, c.user1_id) AS other_id,
+                   u.username AS other_username,
+                   u.name AS other_name,
+                   u.profile_photo AS other_photo,
+                   (SELECT body FROM messages WHERE conversation_id = c.id ORDER BY created_at DESC LIMIT 1) AS last_msg,
+                   (SELECT created_at FROM messages WHERE conversation_id = c.id ORDER BY created_at DESC LIMIT 1) AS last_time,
+                   (SELECT COUNT(*) FROM messages WHERE conversation_id = c.id AND sender_id != :uid2 AND is_read = 0) AS unread_msg_count
+            FROM conversations c
+            JOIN users u ON u.id = IF(c.user1_id = :uid3, c.user2_id, c.user1_id)
+            WHERE c.user1_id = :uid4 OR c.user2_id = :uid5
+            ORDER BY (SELECT COALESCE(MAX(created_at), c.created_at) FROM messages WHERE conversation_id = c.id) DESC
+            LIMIT 5
+        ");
+        $conv_stmt->execute([
+            ':uid1' => $uid,
+            ':uid2' => $uid,
+            ':uid3' => $uid,
+            ':uid4' => $uid,
+            ':uid5' => $uid
+        ]);
+        $nav_conversations = $conv_stmt->fetchAll();
+    } catch (Exception $e) { 
+        $unread_count = 0;
+        $nav_conversations = [];
+    }
 }
 ?>
 <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
@@ -70,13 +99,39 @@ if (isLoggedIn()) {
                         <li class="nav-item">
                             <a class="nav-link nav-link-custom" href="<?php echo $base_path; ?>add-skill.php">Add Skill</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-custom position-relative" href="<?php echo $base_path; ?>messages.php">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link nav-link-custom position-relative dropdown-toggle-no-caret" href="#" id="messagesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-chat-dots-fill"></i> Messages
                                 <?php if ($unread_count > 0): ?>
                                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.6rem;"><?php echo $unread_count; ?></span>
                                 <?php endif; ?>
                             </a>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-3" aria-labelledby="messagesDropdown" style="border-radius: 12px; min-width: 320px; max-height: 400px; overflow-y: auto;">
+                                <li><h6 class="dropdown-header text-muted">Recent Chats</h6></li>
+                                <?php if (empty($nav_conversations)): ?>
+                                    <li><span class="dropdown-item-text text-muted text-center py-3">No conversations yet</span></li>
+                                <?php else: ?>
+                                    <?php foreach ($nav_conversations as $nc): ?>
+                                        <li>
+                                            <a class="dropdown-item py-2 border-bottom d-flex align-items-center gap-3" href="<?php echo $base_path; ?>chat.php?with=<?php echo $nc['other_id']; ?>">
+                                                <img src="<?php echo $base_path; ?>assets/uploads/<?php echo htmlspecialchars($nc['other_photo'] ?: 'default-profile.png'); ?>" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                                <div class="w-100 overflow-hidden">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <strong class="text-dark small"><?php echo htmlspecialchars($nc['other_username']); ?></strong>
+                                                        <?php if ($nc['unread_msg_count'] > 0): ?>
+                                                            <span class="badge bg-danger rounded-pill" style="font-size: 0.7rem;"><?php echo $nc['unread_msg_count']; ?></span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <div class="text-muted text-truncate small" style="max-width: 200px;">
+                                                        <?php echo htmlspecialchars($nc['last_msg'] ?: 'No messages yet'); ?>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                <li><a class="dropdown-item text-center text-primary fw-semibold py-2" href="<?php echo $base_path; ?>messages.php">View All Messages</a></li>
+                            </ul>
                         </li>
                     <?php endif; ?>
                 <?php endif; ?>
