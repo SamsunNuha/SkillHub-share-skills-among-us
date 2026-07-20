@@ -300,7 +300,8 @@ require_once 'includes/navbar.php';
                                                 <?php if ($req['status'] === 'Pending'): ?>
                                                     <span class="badge bg-warning text-dark">Pending</span>
                                                 <?php elseif ($req['status'] === 'Accepted'): ?>
-                                                    <span class="badge bg-success">Accepted</span>
+                                                    <span class="badge bg-success me-2">Accepted</span>
+                                                    <a href="chat.php?with=<?php echo $req['sender_user_id'] ? $req['sender_user_id'] : $req['skill_owner_id']; ?>" class="btn btn-sm btn-primary py-1 px-2" onclick="event.stopPropagation();" style="font-size: 0.75rem;"><i class="bi bi-chat-dots-fill me-1"></i> Message</a>
                                                 <?php else: ?>
                                                     <span class="badge bg-danger">Declined</span>
                                                 <?php endif; ?>
@@ -403,7 +404,10 @@ require_once 'includes/navbar.php';
                                 <?php if ($sreq['status'] === 'Pending'): ?>
                                     <span class="badge bg-warning text-dark">Pending</span>
                                 <?php elseif ($sreq['status'] === 'Accepted'): ?>
-                                    <span class="badge bg-success">Accepted</span>
+                                    <div>
+                                        <span class="badge bg-success me-2">Accepted</span>
+                                        <a href="chat.php?with=<?php echo $sreq['skill_owner_id']; ?>" class="btn btn-sm btn-primary py-1 px-2" onclick="event.stopPropagation();" style="font-size: 0.75rem;"><i class="bi bi-chat-dots-fill me-1"></i> Message</a>
+                                    </div>
                                 <?php else: ?>
                                     <span class="badge bg-danger">Declined</span>
                                 <?php endif; ?>

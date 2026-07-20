@@ -114,25 +114,54 @@ require_once 'includes/header.php';
 require_once 'includes/navbar.php';
 ?>
 <style>
-.chat-wrapper { height: calc(100vh - 220px); min-height: 400px; display: flex; flex-direction: column; }
-.chat-header { background: #fff; border-bottom: 1px solid #e9ecef; border-radius: 16px 16px 0 0; }
-.chat-messages { flex: 1; overflow-y: auto; padding: 20px; background: #f8f9ff; display: flex; flex-direction: column; gap: 10px; }
-.bubble-wrap { display: flex; align-items: flex-end; gap: 8px; }
+/* ── Chat Page ── */
+.chat-wrapper    { height: calc(100vh - 200px); min-height: 450px; display: flex; flex-direction: column; }
+.chat-header     { background: #fff; border-bottom: 1px solid #e9ecef; border-radius: 16px 16px 0 0; }
+.chat-messages   { flex: 1; overflow-y: auto; padding: 20px 16px; background: #f8f9ff;
+                   display: flex; flex-direction: column; gap: 12px; }
+
+/* ── Bubble row ── */
+.bubble-wrap      { display: flex; align-items: flex-end; gap: 8px; max-width: 100%; }
 .bubble-wrap.mine { flex-direction: row-reverse; }
-.bubble { max-width: 70%; padding: 10px 14px; border-radius: 18px; font-size: 0.9rem; line-height: 1.45; word-break: break-word; }
-.bubble.mine { background: linear-gradient(135deg, #4f8ef7, #6c63ff); color: #fff; border-bottom-right-radius: 4px; }
-.bubble.other { background: #fff; color: #222; border: 1px solid #e0e7ff; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
-.bubble-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-.bubble-time { font-size: 0.7rem; color: #aaa; margin-top: 2px; }
-.bubble-wrap.mine .bubble-time { text-align: right; }
-.chat-footer { background: #fff; border-top: 1px solid #e9ecef; padding: 12px 16px; border-radius: 0 0 16px 16px; }
-.chat-input { border: 1.5px solid #d0d9ff; border-radius: 24px; padding: 10px 20px; resize: none; font-size: 0.92rem; transition: border .2s; outline: none; }
-.chat-input:focus { border-color: #4f8ef7; box-shadow: 0 0 0 3px rgba(79,142,247,.12); }
-.send-btn { border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #4f8ef7, #6c63ff); border: none; color: #fff; font-size: 1.1rem; flex-shrink: 0; cursor: pointer; transition: transform .15s, box-shadow .15s; }
-.send-btn:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(79,142,247,.4); }
-.date-divider { text-align: center; font-size: 0.75rem; color: #aaa; margin: 8px 0; }
-.date-divider span { background: #f0f2ff; padding: 2px 12px; border-radius: 20px; }
+
+/* ── Inner wrapper (bubble + time) ── */
+.bubble-wrap > div { display: flex; flex-direction: column; max-width: 72%; }
+.bubble-wrap.mine > div { align-items: flex-end; }
+
+/* ── Bubble itself ── */
+.bubble {
+    display: inline-block;
+    min-width: 48px;           /* stops "hi" from going vertical */
+    padding: 9px 14px;
+    border-radius: 18px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;     /* preserve line breaks */
+    text-align: left;
+}
+.bubble.mine  { background: linear-gradient(135deg,#4f46e5,#6c63ff); color:#fff;
+                border-bottom-right-radius: 4px; }
+.bubble.other { background:#fff; color:#222; border:1px solid #e0e7ff;
+                border-bottom-left-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+
+.bubble-avatar { width:32px; height:32px; border-radius:50%; object-fit:cover; flex-shrink:0; }
+.bubble-time   { font-size:0.7rem; color:#aaa; margin-top:3px; padding:0 2px; }
+
+.chat-footer  { background:#fff; border-top:1px solid #e9ecef;
+                padding:12px 16px; border-radius:0 0 16px 16px; }
+.chat-input   { border:1.5px solid #d0d9ff; border-radius:24px; padding:10px 20px;
+                resize:none; font-size:0.92rem; transition:border .2s; outline:none; }
+.chat-input:focus { border-color:#4f46e5; box-shadow:0 0 0 3px rgba(79,70,229,.12); }
+.send-btn     { border-radius:50%; width:44px; height:44px; display:flex; align-items:center;
+                justify-content:center; background:linear-gradient(135deg,#4f46e5,#6c63ff);
+                border:none; color:#fff; font-size:1.1rem; flex-shrink:0; cursor:pointer;
+                transition:transform .15s, box-shadow .15s; }
+.send-btn:hover { transform:scale(1.08); box-shadow:0 4px 12px rgba(79,70,229,.38); }
+.date-divider { text-align:center; font-size:0.74rem; color:#aaa; margin:4px 0; }
+.date-divider span { background:#eef2ff; padding:3px 14px; border-radius:20px; }
 </style>
+
 
 <div class="container my-4" style="max-width: 760px;">
     <!-- Back link -->

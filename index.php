@@ -55,7 +55,7 @@ require_once 'includes/navbar.php';
                     <i class="bi bi-mortarboard-fill text-primary"></i> Peer-to-Peer Learning
                 </span>
                 <h1 class="hero-heading mb-4 text-dark fw-bold" style="font-size: 3.5rem; line-height: 1.1;">
-                    Exchange Skills<br>with <span class="text-primary">Classmates</span>
+                    Exchange Skills<br>with <span class="text-primary">Classmates</span> with <span style="color: #1e3a8a;">SkillSwap</span>
                 </h1>
                 <p class="hero-sub mb-5 text-muted" style="font-size: 1.1rem; max-width: 90%;">
                     skillHub is a collaborative university ecosystem where you can tutor others in your strengths and learn new skills from peers in return. <strong class="text-primary">No money needed.</strong>
@@ -121,6 +121,7 @@ require_once 'includes/navbar.php';
             <!-- Right Image Area -->
             <div class="col-lg-6 text-center position-relative">
                 <div class="hero-img-wrapper position-relative d-inline-block">
+                    <!-- Main students discussion photo -->
                     <img
                         src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=680"
                         alt="Students collaborating on SkillSwap"
@@ -128,7 +129,13 @@ require_once 'includes/navbar.php';
                         style="border: 8px solid white; object-fit: cover;"
                         referrerpolicy="no-referrer"
                     />
-                    
+
+                    <!-- Logo Badge Overlay (top-left) -->
+                    <div class="position-absolute bg-white rounded-3 shadow-lg p-2 d-flex align-items-center gap-2" style="top: -18px; left: -18px; z-index:10;">
+                        <img src="<?php echo $base_path; ?>assets/img/logo2.jpeg" alt="SkillSwap Logo" style="height:44px; width:44px; object-fit:contain; border-radius:8px;" />
+                        <span class="fw-bold text-dark" style="font-size:0.85rem;">SkillSwap</span>
+                    </div>
+
                     <!-- Floating Card Top Right -->
                     <div class="position-absolute bg-white rounded-3 shadow p-2 d-flex align-items-center gap-3" style="top: -20px; right: -30px; animation: float 3s ease-in-out infinite alternate;">
                         <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:45px; height:45px; background:#e0e7ff;">
@@ -163,6 +170,51 @@ require_once 'includes/navbar.php';
                         </div>
                     </div>
                 </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ===== UNIVERSITY FILTER ===== -->
+<section class="uni-filter-section">
+    <div class="container">
+        <div class="uni-filter-card">
+            <div class="uni-filter-left">
+                <i class="bi bi-mortarboard-fill uni-filter-icon"></i>
+                <div>
+                    <h5 class="uni-filter-title">Find Skills by University</h5>
+                    <p class="uni-filter-sub">Browse skills shared by students from your university</p>
+                </div>
+            </div>
+            <div class="uni-filter-right">
+                <form action="browse-skills.php" method="GET" class="uni-filter-form">
+                    <select name="university" id="universitySelect" class="uni-select">
+                        <option value="">All Universities</option>
+                        <option value="University of Colombo">University of Colombo</option>
+                        <option value="University of Moratuwa">University of Moratuwa</option>
+                        <option value="University of Peradeniya">University of Peradeniya</option>
+                        <option value="University of Sri Jayewardenepura">University of Sri Jayewardenepura</option>
+                        <option value="University of Kelaniya">University of Kelaniya</option>
+                        <option value="University of Ruhuna">University of Ruhuna</option>
+                        <option value="University of Jaffna">University of Jaffna</option>
+                        <option value="Eastern University">Eastern University</option>
+                        <option value="South Eastern University of Sri Lanka">South Eastern University of Sri Lanka</option>
+                        <option value="Rajarata University">Rajarata University</option>
+                        <option value="Sabaragamuwa University">Sabaragamuwa University</option>
+                        <option value="Wayamba University">Wayamba University</option>
+                        <option value="Uva Wellassa University">Uva Wellassa University</option>
+                        <option value="SLIIT">SLIIT</option>
+                        <option value="NSBM Green University">NSBM Green University</option>
+                        <option value="APIIT">APIIT</option>
+                        <option value="IIT">IIT (Informatics Institute of Technology)</option>
+                        <option value="NIBM">NIBM</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <button type="submit" class="uni-filter-btn">
+                        <i class="bi bi-search me-2"></i>Browse Skills
+                    </button>
+                </form>
             </div>
         </div>
     </div>

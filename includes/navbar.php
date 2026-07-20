@@ -138,39 +138,13 @@ if (isLoggedIn()) {
                                 <i class="bi bi-plus-circle"></i> Add Skill
                             </a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link nav-link-custom position-relative dropdown-toggle-no-caret" href="#" id="messagesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom position-relative" href="<?php echo $base_path; ?>messages.php">
                                 <i class="bi bi-chat-dots-fill"></i> Messages
                                 <?php if ($unread_count > 0): ?>
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.6rem;"><?php echo $unread_count; ?></span>
+                                    <span class="badge bg-danger rounded-pill ms-1" style="font-size:0.7rem;"><?php echo $unread_count; ?></span>
                                 <?php endif; ?>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-3" aria-labelledby="messagesDropdown" style="border-radius: 12px; min-width: 320px; max-height: 400px; overflow-y: auto;">
-                                <li><h6 class="dropdown-header text-muted">Recent Chats</h6></li>
-                                <?php if (empty($nav_conversations)): ?>
-                                    <li><span class="dropdown-item-text text-muted text-center py-3">No conversations yet</span></li>
-                                <?php else: ?>
-                                    <?php foreach ($nav_conversations as $nc): ?>
-                                        <li>
-                                            <a class="dropdown-item py-2 border-bottom d-flex align-items-center gap-3" href="<?php echo $base_path; ?>chat.php?with=<?php echo $nc['other_id']; ?>">
-                                                <img src="<?php echo $base_path; ?>assets/uploads/<?php echo htmlspecialchars($nc['other_photo'] ?: 'default-profile.png'); ?>" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
-                                                <div class="w-100 overflow-hidden">
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <strong class="text-dark small"><?php echo htmlspecialchars($nc['other_username']); ?></strong>
-                                                        <?php if ($nc['unread_msg_count'] > 0): ?>
-                                                            <span class="badge bg-danger rounded-pill" style="font-size: 0.7rem;"><?php echo $nc['unread_msg_count']; ?></span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <div class="text-muted text-truncate small" style="max-width: 200px;">
-                                                        <?php echo htmlspecialchars($nc['last_msg'] ?: 'No messages yet'); ?>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                                <li><a class="dropdown-item text-center text-primary fw-semibold py-2" href="<?php echo $base_path; ?>messages.php">View All Messages</a></li>
-                            </ul>
                         </li>
                     <?php endif; ?>
                 <?php endif; ?>
